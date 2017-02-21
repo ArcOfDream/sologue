@@ -82,8 +82,8 @@ func _ready():
 	set_fixed_process(true)
 	
 	# Temporary junk
-	set_process_unhandled_key_input(true) # temporary
-	run_dialog(temp_diag)
+#	set_process_unhandled_key_input(true) # temporary
+#	run_dialog(temp_diag)
 
 
 func _unhandled_key_input(key_event):
