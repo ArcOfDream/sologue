@@ -7,7 +7,7 @@ Features capability for drawing text with effects, like *wave, bounce, shake* or
 
 I've distributed this code under the *MIT License*. I'd be happy to see contributions to make this system work even better or have my name be mentioned somewhere for the effort of making this.
 
-Check out how it looks like here: https://twitter.com/ArcOfDream/status/833823158503370752![]
+Check out how it looks like here: https://twitter.com/ArcOfDream/status/833823158503370752
 
 ###How to use
 To set this up for use, you need to first attach this script to a Control node, such as NinePatchFrame or ColorFrame.  You also need to set up a font, prefferably a DynamicFont which allows changing sizes, which you then save as a resource file. That resource file is what you use inside the script for use.
