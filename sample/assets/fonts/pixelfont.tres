@@ -1,0 +1,13 @@
+[gd_resource type="DynamicFont" load_steps=2 format=1]
+
+[sub_resource type="DynamicFontData" id=1]
+
+font_path = "res://sample/assets/fonts/NewPixelmix2.ttf"
+
+[resource]
+
+font/size = 24
+font/use_mipmaps = false
+font/use_filter = false
+font/font = SubResource( 1 )
+

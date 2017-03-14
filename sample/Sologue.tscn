@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=1]
+
+[ext_resource path="res://addons/sologue/sologue.gd" type="Script" id=1]
+[ext_resource path="res://addons/sologue/icon.png" type="Texture" id=2]
+[ext_resource path="res://sample/assets/fonts/pixelfont.tres" type="DynamicFont" id=3]
+
+[sub_resource type="GDScript" id=1]
+
+script/source = "func _ready():\n\tget_node(\"Sologue\").run()\n\tset_process_unhandled_key_input(true)\n\t\nfunc _unhandled_key_input(key_event):\n\tget_node(\"Sologue\").next_line()\n\t"
+
+[node name="Node" type="Node"]
+
+script/script = SubResource( 1 )
+
+[node name="Sologue" type="Control" parent="."]
+
+focus/ignore_mouse = false
+focus/stop_mouse = true
+size_flags/horizontal = 2
+size_flags/vertical = 2
+margin/left = 0.0
+margin/top = 0.0
+margin/right = 878.0
+margin/bottom = 151.0
+script/script = ExtResource( 1 )
+__meta__ = { "_editor_icon":ExtResource( 2 ) }
+dialog = [ StringArray( "Person A", "Hello/d050.../d005/bworld!" ), StringArray( "Person B", "This is some sort of /wdialogue/r!" ), "I think I can get it to draw a /slimited/r amount of characters if I wanted to.", "/d050.../d005/wI think I will get to it/d100 /d002some other time.", StringArray( "Person A", "Okay, that is all." ) ]
+font = ExtResource( 3 )
+color = Color( 1, 1, 1, 1 )
+
+
