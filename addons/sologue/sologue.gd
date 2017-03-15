@@ -1,5 +1,4 @@
-extends ColorFrame # If you're using a different node than this, replace the name with the
-# corresponding node you're attaching the script to.
+tool extends Control
 
 # SOLOGUE - a small dialog system, by some nerd called ArcOfDream.
 # Version 0.5
@@ -27,12 +26,9 @@ extends ColorFrame # If you're using a different node than this, replace the nam
 # FIXME: Proper spacing for differing font sizes
 # FIXME: Make the name tag not get affected by the font size.
 
-var temp_diag = [
-["Person A", "Hello/d050.../d005/bworld!"],
-["Person B", "This is some sort of /wdialogue/r!"],
-"I think I can get it to draw a /slimited/r amount of characters if I wanted to.",
-"/d050.../d005/wI think I will get to it/d100 /d002some other time.",
-["Person A", "Okay, that is all."] ]
+export(Array) var dialog
+export(Font) var font # The font to be used for drawing text
+export(Color) var color = Color(1,1,1) # Color for the text.
 
 const DEFAULT_FONT_SIZE = 16
 const DEFAULT_DELAY     = 0.05
@@ -42,11 +38,8 @@ const TEXT_WAVE         = 4
 const TEXT_BOUNCE       = 8
 const TEXT_RESET        = 0
 
-var font           = preload("res://assets/misc/font/pixelmix.tres") # The font to be used for drawing text
 var font_size      = DEFAULT_FONT_SIZE
 var portrait       # Texture for the portrait.
-var color          = Color(1,1,1) # Color for the text.
-var input_dialog   = [] # This is the variable you want to replace for processing dialogues.
 var current_string = "" # This should hold the string to iterate over.
 var tag            = "" # This string is intended for the name tag.
 var mods           = [] # Array for triggering text effects. Should be set roughly the same size as the length of the string.
@@ -77,8 +70,9 @@ func _ready():
 	# TODO: Figure out a better way to manage character spacing.
 	char_amt = int(floor((get_rect().size.x - text_offset.x) / 8))
 	line_amt = int(floor((get_rect().size.y - text_offset.y) / 9))
+	
 	print(char_amt, " ", line_amt)
-	print(temp_diag)
+	print(dialog)
 	set_fixed_process(true)
 	
 	# Temporary junk
@@ -144,7 +138,7 @@ func _fixed_process(delta):
 		if counter >= delay:
 			if char_pos < current_string.length():
 				# Modifier specific for delay will be put here.
-				if typeof(mods[char_pos]) == TYPE_ARRAY:
+				if typeof(mods[char_pos]) == TYPE_ARRAY or typeof(mods[char_pos]) == TYPE_STRING_ARRAY:
 					if mods[char_pos][0] & TEXT_DELAY:
 						delay = mods[char_pos][1]
 				
@@ -163,10 +157,9 @@ func _fixed_process(delta):
 		update()
 
 
-func run_dialog(dialog):
+func run():
 	# The function to call if you want to start up a dialogue on this system.
-	if typeof(dialog) == TYPE_ARRAY and finished:
-		input_dialog = dialog
+	if finished:
 		finished = false
 		time = 0.0
 		emit_signal("dialog_start")
@@ -178,39 +171,39 @@ func next_line():
 	if line_done and !finished:
 		progress += 1
 		
-		if progress < input_dialog.size():
-			var item = input_dialog[progress] # get new variable from array
+		if progress < dialog.size():
+			var item = dialog[progress] # get new variable from array
 			char_pos = 0 # reset character position
 			mods.clear()
 			
-			if typeof(item) == TYPE_ARRAY: 
+			if typeof(item) == TYPE_ARRAY or typeof(item) == TYPE_STRING_ARRAY: 
 				has_tag = true
 				tag = item[0] # name
 				if typeof(item[1]) == TYPE_INT: # optional font size here
 					font_size = item[1]
 					font.set_size(font_size)
-					current_string = process_text(item[2])
+					current_string = _process_text(item[2])
 				else: # default size if none
 					font_size = DEFAULT_FONT_SIZE
 					font.set_size(DEFAULT_FONT_SIZE)
-					current_string = process_text(item[1])
+					current_string = _process_text(item[1])
 			else:
 				# we will assume that the item is a string if it's not an array
 				has_tag = false
 				font_size = DEFAULT_FONT_SIZE
 				delay = DEFAULT_DELAY
-				current_string = process_text(item)
+				current_string = _process_text(item)
 				# Below is a little extra that uses a ternary operator. I think it should work!
 #				current_string = process_text(item) if typeof(item) == TYPE_STRING else process_text(str(item))
 			
 			line_done = false
 			emit_signal("dialog_continue")
 		
-		elif progress == input_dialog.size():
+		elif progress == dialog.size():
 			char_pos = 0
 			current_string = ""
 			tag = ""
-			input_dialog.clear()
+			dialog.clear()
 			mods.clear()
 			has_tag = false
 			finished = true
@@ -220,7 +213,7 @@ func next_line():
 			print("Dialogue finished!")
 
 
-func process_text(string):
+func _process_text(string):
 	# Takes a string and removes modifier flags present. Returns the processed string.
 	# Modifiers are placed inside an array which will tell on which place of the string to trigger the modifiers.
 	
